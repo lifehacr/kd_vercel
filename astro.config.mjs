@@ -6,6 +6,7 @@ import vercel from "@astrojs/vercel/serverless";
 import embeds from "astro-embed/integration";
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
+import netlify from "@astrojs/netlify";
 
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeKatex from "rehype-katex";
@@ -30,8 +31,8 @@ export default defineConfig({
     sitemap(),
     icon(),
   ],
-  output: "hybrid",
-  adapter: vercel(),
+  output: "server",
+  adapter: netlify(),
   markdown: {
     rehypePlugins: [
       [rehypeExternalLinks, { target: "_blank", rel: ["noopener"] }],
