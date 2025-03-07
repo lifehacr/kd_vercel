@@ -13,7 +13,7 @@ import remarkMath from "remark-math";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "/",
+  site: "https://kd.ms",
   trailingSlash: "never",
   // TODO: Configure only icons in use: https://www.astroicon.dev/reference/configuration#include
   integrations: [
