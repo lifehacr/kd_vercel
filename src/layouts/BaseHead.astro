@@ -1,0 +1,100 @@
+---
+// Import the global.css file here so that it is included on
+// all pages through the use of the <BaseHead /> component.
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import '../styles/fonts.css';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	redirect?: string;
+	index?: boolean;
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+let { title, description, image, redirect, index } = Astro.props;
+
+if (!title) {
+	title = SITE_TITLE;
+} else {
+	title = `${title} | ${SITE_TITLE}`;
+}
+
+if (!description) {
+	description = SITE_DESCRIPTION;
+}
+
+const isProd = import.meta.env.PROD;
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+
+<!-- Open Graph / Facebook -->
+<meta property="
+	og:type" content="website" />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{image && <meta property="og:image" content={new URL(image, Astro.url)} />}
+
+<!-- Mastodon Author Tag -->
+<meta name="fediverse:creator" content="@dominik@social.lol" />
+
+<!-- RSS Feeds -->
+<!-- Posts -->
+<link
+	rel="alternate"
+	type="application/rss+xml"
+	title={`All Posts | ${SITE_TITLE}`}
+	href={`${Astro.site}rss.xml`}
+/>
+
+<!-- Webmentions -->
+<link
+	rel="webmention"
+	href="https://webmention.io/dominikhofer.me/webmention"
+/>
+<link rel="pingback" href="https://webmention.io/dominikhofer.me/xmlrpc" />
+
+<!-- Sitemap -->
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<!-- External CSS -->
+<link
+	rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"
+	integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww"
+	crossorigin="anonymous"
+/>
+
+<!-- Robots -->
+{index === false ? <meta name="robots" content="noindex, nofollow" /> : null}
+
+<!-- Redirect -->
+{redirect ? <meta http-equiv="refresh" content={`0; url=${redirect}`} /> : null}
+
+<!-- Plausible Analytics -->
+{
+	isProd && (
+		<script
+			defer
+			data-domain="dominikhofer.me"
+			src="https://analytics.linea.studio/js/script.js"
+		/>
+	)
+}

@@ -1,0 +1,48 @@
+---
+import { default as cn } from 'classnames';
+import SimpleLinkButton from './Button.astro';
+const { isFooter } = Astro.props;
+---
+
+<div
+	class={cn(
+		'flex items-center font-mono',
+		isFooter ? 'gap-4 text-sm' : 'gap-2'
+	)}>
+	<SimpleLinkButton
+		href="https://bsky.app/profile/dominikhofer.me"
+		target="_blank"
+		rel="noopener"
+		isSimple={isFooter}
+		icon="brand-bluesky"
+	/>
+	<SimpleLinkButton
+		href="https://social.lol/@dominikhofer"
+		target="_blank"
+		rel="nofollow me"
+		isSimple={isFooter}
+		icon="brand-mastodon"
+	/>
+	<SimpleLinkButton
+		href="https://github.com/hfrdmnk"
+		target="_blank"
+		rel="nofollow me"
+		isSimple={isFooter}
+		icon="brand-github"
+	/>
+	<SimpleLinkButton
+		href="/hi"
+		target="_blank"
+		rel="noopener"
+		isSimple={isFooter}
+		icon="mail"
+	/>
+	<SimpleLinkButton
+		href="/rss.xml"
+		target="_blank"
+		rel="noopener"
+		isSimple={isFooter}
+		icon="rss"
+	/>
+	{!isFooter && <div class="h-[1px] bg-gray-200 w-full" />}
+</div>

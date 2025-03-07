@@ -1,0 +1,75 @@
+---
+import { Icon } from 'astro-icon/components';
+import { default as cn } from 'classnames';
+
+const { type } = Astro.props;
+---
+
+<div
+	class={cn(
+		'rounded transition-all items-center gap-2 no-underline px-2 py-1 border inline-flex select-none font-mono text-sm self-start',
+		{
+			'bg-emerald-50 text-emerald-600 border-emerald-200':
+				type === 'personal' || type === 'essay',
+			'bg-amber-50 text-amber-600 border-amber-200':
+				type === 'cv' || type === 'post',
+			'bg-blue-50 text-blue-600 border-blue-200':
+				type === 'project' || type === 'note',
+		}
+	)}>
+	{
+		() => {
+			switch (type) {
+				case 'personal':
+					return (
+						<>
+							<Icon name="tabler:heart" class="w-5 h-5" />
+							<span>Personal</span>
+						</>
+					);
+				case 'cv':
+					return (
+						<>
+							<Icon name="tabler:clipboard-list" class="w-5 h-5" />
+							<span>CV</span>
+						</>
+					);
+				case 'project':
+					return (
+						<>
+							<Icon name="tabler:devices" class="w-5 h-5" />
+							<span>Project</span>
+						</>
+					);
+				case 'note':
+					return (
+						<>
+							<Icon name="tabler:note" class="w-5 h-5" />
+							<span>Note</span>
+						</>
+					);
+				case 'post':
+					return (
+						<>
+							<Icon name="tabler:article" class="w-5 h-5" />
+							<span>Post</span>
+						</>
+					);
+				case 'essay':
+					return (
+						<>
+							<Icon name="tabler:book" class="w-5 h-5" />
+							<span>Essay</span>
+						</>
+					);
+				default:
+					return (
+						<>
+							<Icon name="tabler:select-all" class="w-5 h-5" />
+							<span>Unknown</span>
+						</>
+					);
+			}
+		}
+	}
+</div>

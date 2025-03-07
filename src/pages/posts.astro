@@ -1,0 +1,130 @@
+---
+import { getCollection } from 'astro:content';
+
+import SimpleLinkButton from '../components/Button.astro';
+import HeaderContainer from '../components/HeaderContainer.astro';
+import HeaderTitle from '../components/HeaderTitle.astro';
+import MainContainer from '../components/MainContainer.astro';
+import PostLink from '../components/PostLink.astro';
+import SectionMarginTitle from '../components/SectionMarginTitle.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+import og from '../images/og/posts.jpg';
+
+const { type } = Astro.props;
+
+let posts = await getCollection('posts');
+type Posts = (typeof posts)[number][];
+
+const currentDate = new Date();
+
+if (type === 'note' || type === 'post' || type === 'essay') {
+	posts = posts.filter(
+		(post) => post.data.type === type && new Date(post.data.date) <= currentDate
+	);
+}
+
+const groupedPosts = groupPostsByYear(posts);
+
+function groupPostsByYear(posts: Posts): [number, Posts][] {
+	const years: { [key: number]: Posts } = {};
+
+	posts.forEach((post) => {
+		const year = new Date(post.data.date).getFullYear();
+
+		if (!years[year]) {
+			years[year] = [] as Posts;
+		}
+
+		years[year].push(post);
+	});
+
+	Object.keys(years).forEach((year) => {
+		years[Number(year)].sort(
+			(a, b) =>
+				new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+		);
+	});
+
+	// Convert the years object to an array of [year, milestones] tuples
+	const sortedYears: [number, Posts][] = Object.entries(years).map(
+		([year, posts]) => [Number(year), posts]
+	);
+
+	// Sort the years in descending order (newest to oldest)
+	sortedYears.sort((a, b) => b[0] - a[0]);
+
+	return sortedYears;
+}
+
+const title = 'My thoughts, written down.';
+
+const description =
+	'Preserving my thoughts, ideas and other interesting things I come across.';
+---
+
+<BaseLayout title={title} description={description} image={og.src}>
+	<header slot="header" class="main-grid">
+		<HeaderContainer>
+			<HeaderTitle>
+				<h1>Thinking out loud.</h1>
+			</HeaderTitle>
+			<div class="flex flex-col gap-4">
+				<p class="font-medium text-pretty">
+					This is my personal blog, a space where I share my thoughts, ideas and
+					other interesting things I come across. I view it as some sort of a
+					timecapsule, where I document my journey and see how I evolve over
+					time.
+				</p>
+				<p>
+					On here, you will find <a href="/posts/notes#archive">notes</a> (aka fleeting
+					thoughts), regular <a href="/posts/regular#archive">posts</a>
+					and more elaborate <a href="/posts/essays#archive">essays</a>.
+				</p>
+			</div>
+		</HeaderContainer>
+	</header>
+	<MainContainer>
+		<SectionMarginTitle id="archive">
+			<div
+				class="flex flex-wrap sm:flex-nowrap sm:justify-normal items-center gap-2 font-mono">
+				<SimpleLinkButton
+					href="/posts#archive"
+					icon="border-all"
+					isActive={!type}>
+					All
+				</SimpleLinkButton>
+				<SimpleLinkButton
+					href="/posts/notes#archive"
+					icon="note"
+					isActive={type === 'note'}>
+					Notes
+				</SimpleLinkButton>
+				<SimpleLinkButton
+					href="/posts/regular#archive"
+					icon="article"
+					isActive={type === 'post'}>
+					Posts
+				</SimpleLinkButton>
+				<SimpleLinkButton
+					href="/posts/essays#archive"
+					icon="book"
+					isActive={type === 'essay'}>
+					Essays
+				</SimpleLinkButton>
+				<div class="h-[1px] bg-gray-200 flex-1"></div>
+			</div>
+		</SectionMarginTitle>
+		{
+			groupedPosts.map(([year, posts]) => (
+				<>
+					<SectionMarginTitle title={year.toString()} gap="1.5">
+						{posts.map((post) => (
+							<PostLink post={post} />
+						))}
+					</SectionMarginTitle>
+				</>
+			))
+		}
+	</MainContainer>
+</BaseLayout>

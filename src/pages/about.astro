@@ -1,0 +1,234 @@
+---
+import { getCollection } from 'astro:content';
+
+import FancyImage from '../components/FancyImage.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+import bubbles from '../images/pages/bubbles.jpg';
+import happy from '../images/pages/happy.jpg';
+import nocco from '../images/pages/nocco.jpg';
+
+import og from '../images/og/about.jpg';
+
+import SimpleLinkButton from '../components/Button.astro';
+import HeaderContainer from '../components/HeaderContainer.astro';
+import HeaderTitle from '../components/HeaderTitle.astro';
+import MainContainer from '../components/MainContainer.astro';
+import Milestone from '../components/Milestone.astro';
+import SectionMarginTitle from '../components/SectionMarginTitle.astro';
+import SimpleTag from '../components/SimpleTag.astro';
+
+const { type } = Astro.props;
+
+let milestones = await getCollection('milestones');
+type Milestones = (typeof milestones)[number][];
+
+if (type === 'cv' || type === 'personal' || type === 'project') {
+	milestones = milestones.filter((milestone) => milestone.data.type === type);
+}
+
+const groupedMilestones = groupMilestonesByYear(milestones);
+
+function groupMilestonesByYear(milestones: Milestones): [number, Milestones][] {
+	const years: { [key: number]: Milestones } = {};
+
+	milestones.forEach((milestone) => {
+		const year = new Date(milestone.data.date).getFullYear();
+
+		if (!years[year]) {
+			years[year] = [] as Milestones;
+		}
+
+		years[year].push(milestone);
+	});
+
+	Object.keys(years).forEach((year) => {
+		years[Number(year)].sort(
+			(a, b) =>
+				new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+		);
+	});
+
+	// Convert the years object to an array of [year, milestones] tuples
+	const sortedYears: [number, Milestones][] = Object.entries(years).map(
+		([year, milestones]) => [Number(year), milestones]
+	);
+
+	// Sort the years in descending order (newest to oldest)
+	sortedYears.sort((a, b) => b[0] - a[0]);
+
+	return sortedYears;
+}
+
+const title = 'Let me introduce myself.';
+
+const description =
+	'This is the right place to find out who I am, what I do, and what I like.';
+---
+
+<BaseLayout title={title} description={description} image={og.src}>
+	<header slot="header" class="main-grid">
+		<HeaderContainer>
+			<HeaderTitle>
+				<h1>
+					Who <span class="line-through text-gray-400">let the dogs out</span> is
+					Dominik?
+				</h1>
+				<SimpleTag icon="calendar-month"
+					>Last updated: October 3rd, 2024</SimpleTag
+				>
+			</HeaderTitle>
+			<div class="flex flex-col gap-4">
+				<p class="font-medium text-pretty">
+					I’m an early 20s guy from Switzerland. So naturally, I’m still trying
+					to find my place in the world. Figuring out who I am and what I want
+					to do. And this website serves as a time capsule for preserving and
+					documenting this project we call personal life.
+				</p>
+				<p>
+					By day, I’m working as a Webflow developer @<a
+						href="https://bloqlabs.ch"
+						target="_blank"
+						rel="noopener">Bloq Labs</a
+					> and create my own things at night. Mostly by designing & coding stuff,
+					but I also got into <a href="/races">running</a> lately and I'm trying
+					to get better at articulating my thoughts (aka writing on <a
+						href="/posts">this blog</a
+					>).
+				</p>
+				<p>
+					Other than that, I like to learn and understand as much as I can about
+					this fascinating world we’re living in. Mostly by myself and from
+					books or the internet. But because that can get a bit lonely, and you
+					have to be <em>very</em> disciplined to study the hard parts, I'm also
+					attending university – currently studying computer science @<a
+						href="https://www.unibe.ch"
+						target="_blank"
+						rel="noopener">University of Bern</a
+					>. My minors are maths and social sciences.
+				</p>
+				<p>
+					For a more up-to-date overview of what I’m doing, take a look at the
+					<a href="/now">/now</a> page.
+				</p>
+			</div>
+			<div class="flex flex-col gap-4 sm:gap-2 sm:flex-row md:-mx-16">
+				<div class="flex-1">
+					<FancyImage
+						image={bubbles}
+						alt="Me watching some soap bubbles and looking fascinated."
+						class="aspect-square"
+						displayName="bubbles.jpg"
+						location="Barcelona, ES"
+					/>
+				</div>
+				<div class="flex-1">
+					<FancyImage
+						image={nocco}
+						alt="My favorite drink, a can of NOCCO."
+						class="aspect-square"
+						displayName="nocco.jpg"
+						location="Stockholm, SE"
+					/>
+				</div>
+				<div class="flex-1">
+					<FancyImage
+						image={happy}
+						alt="Happy times."
+						class="aspect-square"
+						displayName="happy.jpg"
+						location="Milan, IT"
+					/>
+				</div>
+			</div>
+		</HeaderContainer>
+	</header>
+	<MainContainer>
+		<SectionMarginTitle title="A list of things I like">
+			<p>
+				This is not exhaustive, but should get you a pretty good overview of who
+				I am :)
+			</p>
+			<p class="italic">
+				Noir thrillers (books & movies), running, reading a good book, cozy
+				evenings with loved ones, trying out new cooking recipes, rainy days in
+				big cities, getting lost in random rabbit holes, <s
+					>making plans about the future</s
+				> daydreaming, collecting inspiration (for one of my thousand project ideas),
+				working in trains, deep house (or whatever genre Elderbrook and BUNT. fit
+				into), the feeling after coming home from the gym, thinking and philosophising
+				about stuff I find interesting right at that moment (and now writing about
+				it too), baby goats & dogs, biographies of inspiring people, true-crime podcasts,
+				Liverpool FC, Bern, strolling through book stores, NOCCO, El Tony Mate, the
+				smell of a summer thunderstorm, street photography, bringing things to live
+				with code, minimalism (especially as a design style), sushi, poké bowls,
+				simple living, board game nights with friends, …
+			</p>
+			<p>(Plus 1000 other things I forgot to write down and will add later.)</p>
+		</SectionMarginTitle>
+		<SectionMarginTitle title="Where to find me">
+			<p>
+				I try to reduce my social media consumption as much as possible. That’s
+				why my current main hub is this website. If you want to reach out, have
+				a chat or create something together, you can also find me on <a
+					href="https://social.lol/@dominikhofer"
+					target="_blank"
+					rel="nofollow me">Mastodon</a
+				>, or simply <a href="/hi" target="_blank" rel="noopener"
+					>write me an email</a
+				> (the old school way).
+			</p>
+			<p>
+				And don’t forget to subscribe to my <a
+					href="/rss.xml"
+					target="_blank"
+					rel="noopener">RSS feed</a
+				> to keep up to date with the things I put out into this world!
+			</p>
+		</SectionMarginTitle>
+		<SectionMarginTitle id="timeline" title="What I did in the past">
+			<div
+				class="flex flex-wrap sm:flex-nowrap sm:justify-normal items-center gap-2 font-mono">
+				<SimpleLinkButton
+					href="/about#timeline"
+					icon="border-all"
+					isActive={!type}>
+					All
+				</SimpleLinkButton>
+				<SimpleLinkButton
+					href="/about/personal#timeline"
+					icon="heart"
+					isActive={type === 'personal'}>
+					Personal
+				</SimpleLinkButton>
+				<SimpleLinkButton
+					href="/about/cv#timeline"
+					icon="clipboard-list"
+					isActive={type === 'cv'}>
+					CV
+				</SimpleLinkButton>
+				<SimpleLinkButton
+					href="/about/projects#timeline"
+					icon="devices"
+					isActive={type === 'project'}>
+					Projects
+				</SimpleLinkButton>
+				<div class="h-[1px] bg-gray-200 flex-1"></div>
+			</div>
+		</SectionMarginTitle>
+		{
+			groupedMilestones.map(([year, milestones]) => (
+				<>
+					<SectionMarginTitle title={year.toString()}>
+						{milestones.map((milestone) => (
+							<Milestone
+								milestone={milestone}
+								showImage={milestone.data.isFeatured ? true : false}
+							/>
+						))}
+					</SectionMarginTitle>
+				</>
+			))
+		}
+	</MainContainer>
+</BaseLayout>

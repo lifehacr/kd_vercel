@@ -1,0 +1,134 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Picture } from 'astro:assets';
+import readingTime from 'reading-time';
+import Callout from '../components/Callout.astro';
+import HeaderContainer from '../components/HeaderContainer.astro';
+import HeaderTitle from '../components/HeaderTitle.astro';
+import MainContainer from '../components/MainContainer.astro';
+import SectionMarginTitle from '../components/SectionMarginTitle.astro';
+import SimpleTag from '../components/SimpleTag.astro';
+import Webmentions from '../components/Webmentions.astro';
+import newsletterOg from '../images/og/newsletter.jpg';
+import postsOg from '../images/og/posts.jpg';
+import { formatPostDate } from '../utils/helper';
+import BaseLayout from './BaseLayout.astro';
+
+const { title, excerpt, date, lastUpdated, tags, visual, webmentionsLink } =
+	Astro.props;
+
+const isNewsletter = Astro.url.pathname.startsWith('/newsletter');
+
+const og = isNewsletter ? newsletterOg : postsOg;
+
+const ogImage = visual ?? og;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+
+const content = await Astro.slots.render('default');
+---
+
+<BaseLayout
+	title={title}
+	description={excerpt}
+	image={ogImage.src}
+	isArticle={true}>
+	<header slot="header" class="main-grid -mb-12">
+		<HeaderContainer>
+			{
+				visual && (
+					<div class="md:-mx-16">
+						<Picture
+							src={visual}
+							alt={`Visual for: ${title}`}
+							class="rounded-lg"
+						/>
+					</div>
+				)
+			}
+			<HeaderTitle>
+				<h1>{title}</h1>
+				<div class="flex flex-wrap items-center gap-2 mt-2 select-none">
+					<SimpleTag icon="calendar-month"
+						>{formatPostDate(new Date(date))}</SimpleTag
+					>
+					{
+						lastUpdated &&
+							new Date(lastUpdated).toDateString() !==
+								new Date(date).toDateString() && (
+								<SimpleTag icon="refresh">
+									Last updated:
+									{formatPostDate(new Date(lastUpdated))}
+								</SimpleTag>
+							)
+					}
+					<span class="text-gray-500">&#183;</span>
+					<span class="font-mono text-sm text-gray-500"
+						>{readingTime(content).text}</span
+					>
+					{
+						tags?.length > 0 && (
+							<>
+								<span class="text-gray-500">&#183;</span>
+								{tags.map((tag: string) => (
+									<SimpleTag icon="tag">{tag}</SimpleTag>
+								))}
+							</>
+						)
+					}
+				</div>
+			</HeaderTitle>
+		</HeaderContainer>
+	</header>
+	<MainContainer>
+		<SectionMarginTitle>
+			{
+				!isNewsletter ? (
+					<a
+						href="/posts"
+						class="flex items-center gap-2 no-highlight no-underline text-gray-500"
+						slot="aside">
+						<Icon name="tabler:arrow-left" class="w-5 h-5" />
+						<span>Back to all posts</span>
+					</a>
+				) : (
+					<a
+						href="/newsletter"
+						class="flex items-center gap-2 no-highlight no-underline text-gray-500"
+						slot="aside">
+						<Icon name="tabler:arrow-left" class="w-5 h-5" />
+						<span>Back to all newsletter issues</span>
+					</a>
+				)
+			}
+			<div class="e-content">
+				<slot />
+			</div>
+			<div class="mt-12">
+				<Callout icon="messages" title="What are your thoughts on this post?">
+					<div class="space-y-2">
+						<p>
+							I’d love to hear from you! Please write me an email by clicking <a
+								href="/hi"
+								target="_blank"
+								rel="noopener">this link</a
+							> (I reply to every email I receive!).
+						</p>
+						{
+							webmentionsLink && (
+								<p>
+									If you're on Mastodon, interact with{' '}
+									<a href={webmentionsLink} rel="noopener" target="_blank">
+										this post
+									</a>{' '}
+									and your reaction will appear below after some time.
+								</p>
+							)
+						}
+					</div>
+				</Callout>
+				<Webmentions />
+			</div>
+		</SectionMarginTitle>
+	</MainContainer>
+</BaseLayout>

@@ -1,0 +1,60 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import HeaderContainer from '../components/HeaderContainer.astro';
+import HeaderTitle from '../components/HeaderTitle.astro';
+import PostImage from '../components/PostImage.astro';
+import { PROSE_CLASSES } from '../consts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Post from '../layouts/PostLayout.astro';
+
+type Props = CollectionEntry<'posts'> | CollectionEntry<'redirects'>;
+
+export async function getStaticPaths() {
+	const currentDate = new Date();
+	const posts = await getCollection('posts');
+	const redirects = await getCollection('redirects');
+
+	type Post = CollectionEntry<'posts'>;
+
+	const filteredPosts = posts.filter(
+		(post: Post) => new Date(post.data.date) <= currentDate
+	);
+
+	const entries = [...filteredPosts, ...redirects];
+
+	return entries.map((entry) => ({
+		params: { slug: entry.slug },
+		props: entry,
+	}));
+}
+
+const entry = Astro.props as Props;
+const { Content } = await entry.render();
+---
+
+{
+	entry.collection === 'posts' && (
+		<Post {...entry.data}>
+			<div class={`${PROSE_CLASSES}`}>
+				<Content components={{ img: PostImage }} />
+			</div>
+		</Post>
+	)
+}
+
+{
+	entry.collection === 'redirects' && (
+		<BaseLayout redirect={entry.data.to} index={false}>
+			<header slot="header" class="main-grid">
+				<HeaderContainer>
+					<HeaderTitle>
+						<h1>This page will soon redirect you!</h1>
+						<p>
+							If not, click on this <a href={entry.data.to}>link</a>!
+						</p>
+					</HeaderTitle>
+				</HeaderContainer>
+			</header>
+		</BaseLayout>
+	)
+}

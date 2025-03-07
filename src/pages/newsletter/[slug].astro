@@ -1,0 +1,31 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import PostImage from '../../components/PostImage.astro';
+import { PROSE_CLASSES } from '../../consts';
+import Post from '../../layouts/PostLayout.astro';
+
+type Props = CollectionEntry<'newsletter'>;
+
+export async function getStaticPaths() {
+	const entries = await getCollection('newsletter');
+	const currentDate = new Date();
+
+	return entries
+		.filter((entry) => new Date(entry.data.date) <= currentDate)
+		.map((entry) => ({
+			params: { slug: entry.slug },
+			props: entry,
+		}));
+}
+
+const entry = Astro.props as Props;
+
+const { Content } = await entry.render();
+---
+
+<Post {...entry.data}>
+	<div class={`${PROSE_CLASSES}`}>
+		<Content components={{ img: PostImage }} />
+	</div>
+</Post>
+)
