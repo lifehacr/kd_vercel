@@ -1,8 +1,8 @@
+import netlify from "@astrojs/netlify"; // ✅ Import Netlify adapter
 import alpinejs from "@astrojs/alpinejs";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
-import vercel from "@astrojs/vercel/serverless";
 import embeds from "astro-embed/integration";
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
@@ -13,9 +13,8 @@ import remarkMath from "remark-math";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://kd.ms",
+  site: "https://dominikhofer.me",
   trailingSlash: "never",
-  // TODO: Configure only icons in use: https://www.astroicon.dev/reference/configuration#include
   integrations: [
     embeds({
       services: {
@@ -30,8 +29,8 @@ export default defineConfig({
     sitemap(),
     icon(),
   ],
-  output: "hybrid",
-  adapter: vercel(),
+  output: "static", // ✅ Use "static" for Netlify
+  adapter: netlify(), // ✅ Use Netlify adapter
   markdown: {
     rehypePlugins: [
       [rehypeExternalLinks, { target: "_blank", rel: ["noopener"] }],
