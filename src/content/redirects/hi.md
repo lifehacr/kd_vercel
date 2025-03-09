@@ -1,4 +1,3 @@
 ---
-to: mailto:hi@dominikhofer.me
+to: mailto:hello@kd.ms
 ---
-
