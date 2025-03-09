@@ -5,7 +5,7 @@ export async function GET(context) {
     <footer>
       <p><strong>---</strong></p>
       <p><strong>Thanks for subscribing to my newsletter!</strong></p>
-      <p>Reply to this issue via <a href="mailto:hi@dominikhofer.me?subject=${encodeURIComponent(`Reply to: ${title}`)}">email</a>.</p>
+      <p>Reply to this issue via <a href="mailto:hello@kd.ms?subject=${encodeURIComponent(`Reply to: ${title}`)}">email</a>.</p>
     </footer>`;
 
   return createRSSFeed(context, {
